@@ -28,6 +28,12 @@ public class App {
                 case "목록":
                     read();    // 명령: "목록"일 때 read() 메소드 실행
                     break;
+
+                default:
+                    if(cmd.startsWith("삭제?id=")){
+                        delete();
+                    }     // 명령: "삭제?id="로 시작할 때 delete() 메소드 실행
+                    break;
             }
         }
     }
@@ -65,5 +71,11 @@ public class App {
                 System.out.printf("%d / %s / %s\n", q.getId(), q.getAuthor(), q.getContent());
             }
         }
+    }
+
+    static void delete(){
+        int deleteId = Integer.parseInt(cmd.substring("삭제?id=".length()));
+        qList.remove(deleteId-1);
+        System.out.printf("%d번 명언이 삭제되었습니다.\n", deleteId);
     }
 }
