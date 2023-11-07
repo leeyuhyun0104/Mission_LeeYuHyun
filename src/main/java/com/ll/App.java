@@ -33,6 +33,9 @@ public class App {
                     if(cmd.startsWith("삭제?id=")){
                         delete();
                     }     // 명령: "삭제?id="로 시작할 때 delete() 메소드 실행
+                    else if (cmd.startsWith("수정?id=")) {
+                        update();
+                    }
                     break;
             }
         }
@@ -80,6 +83,29 @@ public class App {
             qList.remove(deleteId-1);
             System.out.printf("%d번 명언이 삭제되었습니다.\n", deleteId);
         }
-        else System.out.printf("%d번 명언은 존재하지 않습니다.\n", deleteId);;
+        else System.out.printf("%d번 명언은 존재하지 않습니다.\n", deleteId);
+    }
+
+    static void update(){
+        int updateId = Integer.parseInt(cmd.substring("수정?id=".length()));
+
+        if (updateId >= 1 && updateId <= qList.size()) {
+            Quotation q = qList.get(updateId-1);
+            System.out.printf("명언(기존): %s\n", q.getContent());
+
+            System.out.print("명언: ");
+            Scanner scanner = new Scanner(System.in);
+            String newContent = scanner.nextLine();
+            q.setContent(newContent);
+
+            System.out.printf("작가(기존): %s\n", q.getAuthor());
+
+            System.out.print("작가: ");
+            String newAuthor = scanner.nextLine();
+            q.setAuthor(newAuthor);
+
+            System.out.println("명언이 수정되었습니다.");
+        }
+        else System.out.printf("%d번 명언은 존재하지 않습니다.\n", updateId);
     }
 }
