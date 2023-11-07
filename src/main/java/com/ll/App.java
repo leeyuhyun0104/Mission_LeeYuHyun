@@ -75,7 +75,11 @@ public class App {
 
     static void delete(){
         int deleteId = Integer.parseInt(cmd.substring("삭제?id=".length()));
-        qList.remove(deleteId-1);
-        System.out.printf("%d번 명언이 삭제되었습니다.\n", deleteId);
+
+        if(deleteId >= 1 && deleteId <= qList.size()){
+            qList.remove(deleteId-1);
+            System.out.printf("%d번 명언이 삭제되었습니다.\n", deleteId);
+        }
+        else System.out.printf("%d번 명언은 존재하지 않습니다.\n", deleteId);;
     }
 }
