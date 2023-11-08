@@ -8,10 +8,9 @@ import java.util.Scanner;
 public class App {
 
     static String cmd;
-    static int cnt = 0;    // 등록된 명언의 개수, 0부터 시작
     static List<Quotation> qList = new ArrayList<>();   // 명언 저장 리스트
     static List<Integer> deletedIds = new ArrayList<>(); // 삭제된 명언의 ID를 추적하는 리스트
-    static String dataFileName = "quotations.dat"; // 파일 이름
+    static String dataFileName = "quotations.dat"; // 데이터 파일
 
     public static void run() {
         loadData(qList); // 애플리케이션 시작 시 데이터 파일에서 명언 데이터 로드
@@ -57,8 +56,16 @@ public class App {
         System.out.print("작가 : ");
         String author = scanner.nextLine();   // scanner로 명언, 작가 입력 받음
 
-        cnt++;  // 등록된 명언의 개수 1씩 증가
-        int id = cnt;
+        // 이미 존재하는 명언의 최대 ID 값을 찾음
+        int maxId = 0;
+        for (Quotation q : qList) {
+            if (q.getId() > maxId) {
+                maxId = q.getId();
+            }
+        }
+
+        // 새로운 ID는 최대 ID에 1을 더한 값
+        int id = maxId + 1;
 
         Quotation q = new Quotation(id, content, author);
         qList.add(q);    // 리스트에 명언 객체 추가
@@ -206,12 +213,12 @@ public class App {
     }
 
     // 특정 ID를 가진 명언을 찾음
-    static Quotation findQuotationById(int id) {
+ /*   static Quotation findQuotationById(int id) {
         for (Quotation q : qList) {
             if (q.getId() == id) {
                 return q;
             }
         }
         return null;
-    }
+    }*/
 }
