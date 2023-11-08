@@ -1,5 +1,6 @@
 package com.ll;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -10,7 +11,10 @@ public class App {
     static int cnt = 0;    // 등록된 명언의 개수, 0부터 시작
     static List<Quotation> qList = new ArrayList<>();   // 명언 저장 리스트
     static List<Integer> deletedIds = new ArrayList<>(); // 삭제된 명언의 ID를 추적하는 리스트
+    static String dataFileName = "quotations.dat"; // 파일 이름
+
     public static void run() {
+        loadData(qList); // 애플리케이션 시작 시 데이터 파일에서 명언 데이터 로드
         System.out.println("== 명언 앱 ==");
 
         while (true) {
@@ -20,6 +24,7 @@ public class App {
 
             switch (cmd) {
                 case "종료":
+                    saveData(qList); // 애플리케이션 종료 시 파일에 데이터 저장
                     return;   // 명령: "종료"일 때 앱 종료
 
                 case "등록":
@@ -160,5 +165,53 @@ public class App {
         catch (NumberFormatException e) {
             System.out.println("올바른 명령 형식이 아닙니다.");
         }    // 수정?id 값에 int로 변환할 수 없는 값이 들어왔을 때
+    }
+
+    // 명언 데이터를 파일에 저장
+    static void saveData(List<Quotation> qList) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(dataFileName))) {
+            oos.writeObject(qList);
+        } catch (IOException e) {
+            e.printStackTrace();
+            // 파일 저장 중 예외 처리 수행
+        }
+    }
+
+    // 파일에서 명언 데이터 로드
+    static void loadData(List<Quotation> qList) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(dataFileName))) {
+            List<Quotation> loadedQuotations = (List<Quotation>) ois.readObject();
+            qList.clear();
+            qList.addAll(loadedQuotations);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // 다음 사용 가능한 ID 생성
+    static int generateId() {
+        int maxId = 0;
+
+        // 기존 명언 목록에서 가장 큰 ID를 찾음
+        for (Quotation q : qList) {
+            if (q.getId() > maxId) {
+                maxId = q.getId();
+            }
+        }
+
+        // 중복 ID를 방지하기 위해 가장 큰 ID에 1을 더한 값을 반환
+        return maxId + 1;
+    }
+
+    // 특정 ID를 가진 명언을 찾음
+    static Quotation findQuotationById(int id) {
+        for (Quotation q : qList) {
+            if (q.getId() == id) {
+                return q;
+            }
+        }
+        return null;
     }
 }

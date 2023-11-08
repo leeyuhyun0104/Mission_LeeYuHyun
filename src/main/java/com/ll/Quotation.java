@@ -1,6 +1,8 @@
 package com.ll;
 
-public class Quotation {
+import java.io.Serializable;
+
+public class Quotation implements Serializable {
     private int id;
     private String content;
     private String author;
