@@ -160,20 +160,21 @@ public class App {
 
     // 명언 데이터를 파일에 저장
     static void saveData(List<Quotation> qList) {
+        // 파일에 데이터를 쓰기 위해 FileOutputStream 생성, 객체를 직렬화하기 위해 ObjectOutputStream 생성하고 oos에 할당
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(dataFileName))) {
-            oos.writeObject(qList);
+            oos.writeObject(qList);  // 변수 oss를 통해 qList를 파일에 저장
         } catch (IOException e) {
-            e.printStackTrace();
-            // 파일 저장 중 예외 처리 수행
+            throw new RuntimeException(e);
         }
     }
 
     // 파일에서 명언 데이터 로드
     static void loadData(List<Quotation> qList) {
+        // 파일에 데이터를 읽기 위해 FileInputStream 생성, 객체를 역직렬화하기 위해 ObjectInputStream 생성
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(dataFileName))) {
-            List<Quotation> loadedQuotations = (List<Quotation>) ois.readObject();
+            List<Quotation> loadedQuotations = (List<Quotation>) ois.readObject(); // 역직렬화된 객체 저장
             qList.clear();
-            qList.addAll(loadedQuotations);
+            qList.addAll(loadedQuotations); // qList에 읽어온 명언 데이터 추가
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException | ClassNotFoundException e) {
