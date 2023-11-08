@@ -3,6 +3,7 @@ package com.ll;
 import java.io.Serializable;
 
 public class Quotation implements Serializable {
+//    private static final long serialVersionUID = 1L;
     private int id;
     private String content;
     private String author;

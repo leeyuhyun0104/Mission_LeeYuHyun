@@ -1,5 +1,7 @@
 package com.ll;
 
+//import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +13,7 @@ public class App {
     static List<Quotation> qList = new ArrayList<>();   // 명언 저장 리스트
     static List<Integer> delList = new ArrayList<>(); // 삭제된 명언의 ID를 추적하는 리스트
     static String dataFileName = "quotations.dat"; // 데이터 파일
+    //static ObjectMapper objectMapper = new ObjectMapper();
 
     public static void run() {
         loadData(qList); // 애플리케이션 시작 시 데이터 파일에서 명언 데이터 로드
@@ -33,6 +36,10 @@ public class App {
                 case "목록":
                     read();    // 명령: "목록"일 때 read() 메소드 실행
                     break;
+
+//                case "빌드":
+//                    build();
+//                    break;
 
                 default:
                     if(cmd.startsWith("삭제?id=")){
@@ -168,6 +175,15 @@ public class App {
         }
     }
 
+//    static void saveData(List<Quotation> qList) {
+//        try (FileWriter fileWriter = new FileWriter(dataFileName)) {
+//            String json = toJson(qList);
+//            fileWriter.write(json);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
     // 파일에서 명언 데이터 로드
     static void loadData(List<Quotation> qList) {
         // 파일에 데이터를 읽기 위해 FileInputStream 생성, 객체를 역직렬화하기 위해 ObjectInputStream 생성
@@ -181,4 +197,60 @@ public class App {
             throw new RuntimeException(e);
         }
     }
+
+//    static void loadData(List<Quotation> qList) {
+//        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(dataFileName), "UTF-8"))) {
+//            StringBuilder sb = new StringBuilder();
+//            int ch;
+//            while ((ch = bufferedReader.read()) != -1) {
+//                sb.append((char) ch);
+//            }
+//            String json = sb.toString();
+//            List<Quotation> loadedQuotations = fromJson(json);
+//            qList.clear();
+//            qList.addAll(loadedQuotations);
+//        } catch (FileNotFoundException e) {
+//            throw new RuntimeException(e);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
+//    static void build() {
+//        try {
+//            String json = toJson(qList); // 명언 목록을 JSON 문자열로 변환
+//            saveJsonToFile(json, "data.json"); // JSON 문자열을 파일에 저장
+//            System.out.println("데이터가 성공적으로 저장되었습니다.");
+//        } catch (Exception e) {
+//            System.out.println("데이터 저장 중 오류가 발생했습니다.");
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    // 명언을 JSON 형식의 문자열로 변환
+//    static String toJson(List<Quotation> qList) {
+//        try {
+//            return objectMapper.writeValueAsString(qList);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    // JSON 문자열을 명언 목록으로 변환
+//    static List<Quotation> fromJson(String json) {
+//        try {
+//            return objectMapper.readValue(json, new TypeReference<List<Quotation>>() {});
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    // JSON 문자열을 파일에 저장
+//    static void saveJsonToFile(String json, String fileName) {
+//        try (FileWriter fileWriter = new FileWriter(fileName)) {
+//            fileWriter.write(json);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 }
