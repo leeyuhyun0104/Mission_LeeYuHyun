@@ -9,7 +9,7 @@ public class App {
 
     static String cmd;
     static List<Quotation> qList = new ArrayList<>();   // 명언 저장 리스트
-    static List<Integer> deletedIds = new ArrayList<>(); // 삭제된 명언의 ID를 추적하는 리스트
+    static List<Integer> delList = new ArrayList<>(); // 삭제된 명언의 ID를 추적하는 리스트
     static String dataFileName = "quotations.dat"; // 데이터 파일
 
     public static void run() {
@@ -92,41 +92,35 @@ public class App {
             }
         }
     }
+
+    // 삭제, 수정을 위해 특정 ID를 가진 명언을 찾아내는 메소드
+    static Quotation findQuotationById(int id) {
+        for (Quotation q : qList) {
+            if (q.getId() == id) {
+                return q;
+            }
+        }
+        return null;
+    }
+
     // 명언 삭제 메소드
     static void delete() {
-
         try {
             // cmd에서 "삭제?id="를 잘라내고 나머지 값을 int로 변환
             int deleteId = Integer.parseInt(cmd.substring("삭제?id=".length()));
+            // id가 deleteId인 명언을 findQuotationById()를 이용해서 찾아내고 toDelete에 할당
+            Quotation toDelete = findQuotationById(deleteId);
 
-            // 이미 삭제된 명언을 다시 삭제하려고 한 경우
-            if (deletedIds.contains(deleteId)) {
-                System.out.println("이미 삭제된 명언입니다.");
-                return;
-            }
-
-            boolean found = false;
-
-            // qList를 순회하면서 id가 deleteId와 일치할 때 found를 true로
-            for (int i = 0; i < qList.size(); i++) {
-                Quotation q = qList.get(i);
-
-                if (q.getId() == deleteId) {
-                    qList.remove(i);
-                    deletedIds.add(deleteId); // 삭제된 명언의 ID를 리스트에 추가
-
-                    found = true;
-                    System.out.printf("%d번 명언이 삭제되었습니다.\n", deleteId);
-                    break;
-                }
-            }
-            if (!found) {
+            if (toDelete != null) {
+                qList.remove(toDelete); // 명언 삭제
+                delList.add(deleteId); // 삭제된 id를 관리하는 리스트에 해당 id 추가
+                System.out.printf("%d번 명언이 삭제되었습니다.\n", deleteId);
+            } else {
                 System.out.printf("%d번 명언은 존재하지 않습니다.\n", deleteId);
-            }   // found가 false인 경우 메시지 출력
-        }
-        catch (NumberFormatException e) {
+            }
+        } catch (NumberFormatException e) {
             System.out.println("올바른 명령 형식이 아닙니다.");
-        }   // 삭제?id 값에 int로 변환할 수 없는 값이 들어왔을 때
+        }  // 삭제?id 값에 int로 변환할 수 없는 값이 들어왔을 때
     }
 
     static void update() {
@@ -134,45 +128,30 @@ public class App {
         try {
             // cmd에서 "수정?id="를 잘라내고 나머지 값을 int로 변환
             int updateId = Integer.parseInt(cmd.substring("수정?id=".length()));
+            // id가 updateId인 명언을 findQuotationById()를 이용해서 찾아내고 toUpdate에 할당
+            Quotation toUpdate = findQuotationById(updateId);
 
-            // 이미 삭제된 명언을 수정하려고 한 경우
-            if (deletedIds.contains(updateId)) {
-                System.out.println("이미 삭제된 명언입니다.");
-                return;
-            }
+            if (toUpdate != null) {
+                System.out.printf("명언(기존): %s\n", toUpdate.getContent());
+                System.out.print("명언: ");
+                Scanner scanner = new Scanner(System.in);
+                String newContent = scanner.nextLine();
+                toUpdate.setContent(newContent);     // 명언 수정
 
-            boolean found = false;
+                System.out.printf("작가(기존): %s\n", toUpdate.getAuthor());
+                System.out.print("작가: ");
+                String newAuthor = scanner.nextLine();
+                toUpdate.setAuthor(newAuthor);   // 작가 수정
 
-            // qList를 순회하면서 id가 updateId와 일치할 때 found를 true로
-            for (int i = 0; i < qList.size(); i++) {
-                Quotation q = qList.get(i);
-
-                if (q.getId() == updateId) {
-                    System.out.printf("명언(기존): %s\n", q.getContent());
-
-                    System.out.print("명언: ");
-                    Scanner scanner = new Scanner(System.in);
-                    String newContent = scanner.nextLine();
-                    q.setContent(newContent);     // 명언 수정
-
-                    System.out.printf("작가(기존): %s\n", q.getAuthor());
-
-                    System.out.print("작가: ");
-                    String newAuthor = scanner.nextLine();
-                    q.setAuthor(newAuthor);   // 작가 수정
-
-                    found = true;
-                    System.out.println("명언이 수정되었습니다.");
-                }
-            }
-            if (!found) {
+                System.out.println("명언이 수정되었습니다.");
+            } else {
                 System.out.printf("%d번 명언은 존재하지 않습니다.\n", updateId);
-            }   // found가 false인 경우 메시지 출력
-        }
-        catch (NumberFormatException e) {
+            }
+        } catch (NumberFormatException e) {
             System.out.println("올바른 명령 형식이 아닙니다.");
         }    // 수정?id 값에 int로 변환할 수 없는 값이 들어왔을 때
     }
+
 
     // 명언 데이터를 파일에 저장
     static void saveData(List<Quotation> qList) {
@@ -198,27 +177,17 @@ public class App {
     }
 
     // 다음 사용 가능한 ID 생성
-    static int generateId() {
-        int maxId = 0;
-
-        // 기존 명언 목록에서 가장 큰 ID를 찾음
-        for (Quotation q : qList) {
-            if (q.getId() > maxId) {
-                maxId = q.getId();
-            }
-        }
-
-        // 중복 ID를 방지하기 위해 가장 큰 ID에 1을 더한 값을 반환
-        return maxId + 1;
-    }
-
-    // 특정 ID를 가진 명언을 찾음
- /*   static Quotation findQuotationById(int id) {
-        for (Quotation q : qList) {
-            if (q.getId() == id) {
-                return q;
-            }
-        }
-        return null;
-    }*/
+//    static int generateId() {
+//        int maxId = 0;
+//
+//        // 기존 명언 목록에서 가장 큰 ID를 찾음
+//        for (Quotation q : qList) {
+//            if (q.getId() > maxId) {
+//                maxId = q.getId();
+//            }
+//        }
+//
+//        // 중복 ID를 방지하기 위해 가장 큰 ID에 1을 더한 값을 반환
+//        return maxId + 1;
+//    }
 }
