@@ -47,6 +47,21 @@ public class App {
         }
     }
 
+    // 사용 가능한 ID 생성
+    static int generateId() {
+        int maxId = 0;
+
+        // 기존 명언 목록에서 가장 큰 ID를 찾음
+        for (Quotation q : qList) {
+            if (q.getId() > maxId) {
+                maxId = q.getId();
+            }
+        }
+
+        // 중복 ID를 방지하기 위해 가장 큰 ID에 1을 더한 값을 반환
+        return maxId + 1;
+    }
+
     // 명언 등록 메소드
     static void create(){
 
@@ -56,17 +71,7 @@ public class App {
         System.out.print("작가 : ");
         String author = scanner.nextLine();   // scanner로 명언, 작가 입력 받음
 
-        // 이미 존재하는 명언의 최대 ID 값을 찾음
-        int maxId = 0;
-        for (Quotation q : qList) {
-            if (q.getId() > maxId) {
-                maxId = q.getId();
-            }
-        }
-
-        // 새로운 ID는 최대 ID에 1을 더한 값
-        int id = maxId + 1;
-
+        int id = generateId();
         Quotation q = new Quotation(id, content, author);
         qList.add(q);    // 리스트에 명언 객체 추가
 
@@ -175,19 +180,4 @@ public class App {
             throw new RuntimeException(e);
         }
     }
-
-    // 다음 사용 가능한 ID 생성
-//    static int generateId() {
-//        int maxId = 0;
-//
-//        // 기존 명언 목록에서 가장 큰 ID를 찾음
-//        for (Quotation q : qList) {
-//            if (q.getId() > maxId) {
-//                maxId = q.getId();
-//            }
-//        }
-//
-//        // 중복 ID를 방지하기 위해 가장 큰 ID에 1을 더한 값을 반환
-//        return maxId + 1;
-//    }
 }
